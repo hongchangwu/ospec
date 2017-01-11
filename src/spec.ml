@@ -26,7 +26,7 @@ type t =
   { name                : string
   ; examples            : example Queue.t
   ; subspecs            : t Queue.t
-  ; mutable before_each : (unit -> unit) Queue.t 
+  ; mutable before_each : (unit -> unit) Queue.t
   ; mutable before_all  : (unit -> unit) Queue.t
   ; mutable after_each  : (unit -> unit) Queue.t
   ; mutable after_all   : (unit -> unit) Queue.t
