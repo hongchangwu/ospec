@@ -208,11 +208,11 @@ module OASISString = struct
       raise Not_found
 
   let replace_chars f s =
-    let buf = String.make (String.length s) 'X' in
-      for i = 0 to String.length s - 1 do
-        buf.[i] <- f s.[i]
+    let buf = Bytes.make (String.length s) 'X' in
+      for i = 0 to Bytes.length s - 1 do
+        Bytes.set buf i (f s.[i])
       done;
-      buf
+      Bytes.to_string buf
 
 end
 
@@ -243,7 +243,7 @@ module OASISUtils = struct
 
 
   let compare_csl s1 s2 =
-    String.compare (String.lowercase s1) (String.lowercase s2)
+    String.compare (String.lowercase_ascii s1) (String.lowercase_ascii s2)
 
   module HashStringCsl =
     Hashtbl.Make
@@ -251,10 +251,10 @@ module OASISUtils = struct
          type t = string
 
          let equal s1 s2 =
-             (String.lowercase s1) = (String.lowercase s2)
+             (String.lowercase_ascii s1) = (String.lowercase_ascii s2)
 
          let hash s =
-           Hashtbl.hash (String.lowercase s)
+           Hashtbl.hash (String.lowercase_ascii s)
        end)
 
   let varname_of_string ?(hyphen='_') s =
@@ -284,7 +284,7 @@ module OASISUtils = struct
           else
             buf
         in
-          String.lowercase buf
+          String.lowercase_ascii buf
       end
 
   let varname_concat ?(hyphen='_') p s =
@@ -381,7 +381,7 @@ module PropList = struct
         order     = Queue.create ();
         name_norm =
           (if case_insensitive then
-             String.lowercase
+             String.lowercase_ascii
            else
              fun s -> s);
       }
@@ -1250,12 +1250,12 @@ module OASISUnixPath = struct
   let capitalize_file f =
     let dir = dirname f in
     let base = basename f in
-    concat dir (String.capitalize base)
+    concat dir (String.capitalize_ascii base)
 
   let uncapitalize_file f =
     let dir = dirname f in
     let base = basename f in
-    concat dir (String.uncapitalize base)
+    concat dir (String.uncapitalize_ascii base)
 
 end
 
@@ -1790,7 +1790,7 @@ module OASISLibrary = struct
     in
 
     let library_name_of_findlib_name =
-      Lazy.lazy_from_fun
+      Lazy.from_fun
         (fun () ->
            (* Revert findlib_name_of_library_name. *)
            MapString.fold
@@ -4918,10 +4918,10 @@ module InternalInstallPlugin = struct
                               (Filename.concat path)
                               [modul^".mli";
                                modul^".ml";
-                               String.uncapitalize modul^".mli";
-                               String.capitalize   modul^".mli";
-                               String.uncapitalize modul^".ml";
-                               String.capitalize   modul^".ml"])
+                               String.uncapitalize_ascii modul^".mli";
+                               String.capitalize_ascii   modul^".mli";
+                               String.uncapitalize_ascii modul^".ml";
+                               String.capitalize_ascii   modul^".ml"])
                          :: acc
                        with Not_found ->
                          begin
